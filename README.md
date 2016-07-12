@@ -5,17 +5,17 @@ Venmo transaction graph and rolling median			Felix Huang
 (2) "venmo_input/Out of order-6-2-two fifths chance" : input test case up to 640k transactions
                         Roughly there are 760 payments in every 60-sec window.
 
-number of total payments and runtime in ms
-1k :    233
-2k :    374
-5k :    429
-10k :   641
-20k :   922
-40k :  1312
-80k :  1814
-160k : 2697
-320k : 4173
-640k : 6263
+number of total payments and runtime in ms --
+1k :    233,
+2k :    374,
+5k :    429,
+10k :   641,
+20k :   922,
+40k :  1312,
+80k :  1814,
+160k : 2697,
+320k : 4173,
+640k : 6263 .
 
 Runtime scales up close to linear.
 This program takes O(N*(log K)) time, where N is number of total payment transactions and
