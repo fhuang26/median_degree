@@ -27,4 +27,3 @@ This program takes O(N*(log K)) time, where N is number of total payment transac
        average number of payments in every 60-sec window.
        It can also move timestamps of payments forward and backward to make some payments
        out of order.
-               
