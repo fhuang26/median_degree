@@ -19,7 +19,7 @@ Venmo transaction graph and rolling median			Felix Huang
 
 Runtime scales up close to linear.
 This program takes O(N*(log K)) time, where N is number of total payment transactions and
-                                            K is max # of payments in every 60-sec window.
+                                            K is max number of payments in every 60-sec window.
                                             
 (3) ./src/GenerateTestCase.java : to generate test cases by random variable
        To create and be able to use various types of test cases,
