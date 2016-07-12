@@ -4,15 +4,16 @@
 //  In graphV TreeMap, key : user name, value : node in graph
 //
 //  We use graphE TreeMap for edges (payments).
-//  In graphE TreeMap, key : epoch, value : HashSet of edges with this epoch payment transaction time.
+//  In graphE TreeMap, key : epoch, value : HashSet of edges with this epoch, payment transaction time.
 //
 //  For each new payment, we check its epoch (transaction time) with max epoch so far.
 //  If it is out of 60-sec window, ignore it.
 //  
 //  When it is in 60-sec window, we update max epoch.
 //
-//  We delete edges (and relevant nodes) out of current 60-sec window, and then add new payment to
-//  graphV and graphE.
+//  We delete edges (and relevant nodes) out of current 60-sec window.
+//
+//  Then we check existing edge, and add new payment to graphV and graphE.
 //
 //  For rolling median, we maintain two half TreeMap : mapLow to store lower half degrees and
 //  mapHigh to store upper half degrees. The new median will be determined by greatest degree in
@@ -54,7 +55,7 @@ import java.util.ArrayList;
 
 //  Each node is a user. By going through neighbor nbr TreeMap, we can traverse neighbor node (user)
 //  who is involved in a payment with this user.
-//  in nbr TreeMap, key : neighbor user name, value : neighbor node
+//  in nbr TreeMap, key : neighbor user name, value : edge to neighbor node
 class Node {
 	Node (String name_in) {
 		name = name_in;
@@ -101,7 +102,7 @@ public class median_degree {
     //  in graphV TreeMap, key : user name, value : node in graph
 	static TreeMap<String, Node> graphV;
 	
-	//  in graphE TreeMap, key : epoch, value : HashSet of edges with this epoch payment transaction time.
+	//  in graphE TreeMap, key : epoch, value : HashSet of edges with this epoch, payment transaction time.
 	static TreeMap<Long, HashSet<Edge>> graphE;
 	static TreeMap<Integer, Integer> degreeDbg;
 	static long max_epoch;
@@ -110,10 +111,10 @@ public class median_degree {
 	//
 	//  to add 1 edge to graphE and update graphV
 	//
-    //  in graphV TreeMap, key : user name, value : node in graph
-    //  in graphE TreeMap, key : epoch, value : HashSet of edges with this epoch payment transaction time.
+        //  in graphV TreeMap, key : user name, value : node in graph
+        //  in graphE TreeMap, key : epoch, value : HashSet of edges with this epoch, payment transaction time.
 	//
-    //  Each payment creates <= 1 new edge.
+        //  Each payment creates <= 1 new edge.
 	//  # of edges in graph <= K, where K is max # of payments in every 60-sec window.
 	//  also # of users (nodes) <= 2K.
 	//  # of epoch <= K.
@@ -163,7 +164,7 @@ public class median_degree {
 	//
 	//  in graphV TreeMap, key : user name, value : node in graph
 	//
-    //  Each payment creates <= 1 new edge.
+        //  Each payment creates <= 1 new edge.
 	//  # of edges in graph <= K, where K is max # of payments in every 60-sec window.
 	//  # of users (nodes) <= 2K.
 	//  Size of graphV TreeMap = O(K).
@@ -191,15 +192,21 @@ public class median_degree {
 	//
 	//  to delete 1 epoch from graphE
 	//
-	//  in graphE TreeMap, key : epoch, value : HashSet of edges with this epoch payment transaction time.
+	//  in graphE TreeMap, key : epoch, value : HashSet of edges with this epoch, payment transaction time.
 	//
-    //  Each payment creates <= 1 new edge.
+        //  Each payment creates <= 1 new edge.
 	//  # of edges in graph <= K, where K is max # of payments in every 60-sec window.
 	//  also # of users (nodes) <= 2K.
 	//  # of epoch <= K.
 	//  Size of graphV and graphE TreeMap = O(K).
-	//  This method takes O(log K) time.
+	//  graphE update takes O(log K) time.
 	//
+        //  It may delete multiple edges which are out of current 60-sec window.
+        //  For each payment, at most 1 creation and 1 deletion of an edge can be done.
+        //  For whole program, runtime of deletion of edges out of current 60-sec window is
+        //  bounded by O(N*(log K)), where N is number of total payments and K is max number of
+        //  payment transactions in every 60-sec window.
+        //
 	static void delete_1_epoch_from_E (long epoch) {
 		HashSet<Edge> edge_set = graphE.get(epoch);
 		for (Edge e : edge_set) {
@@ -211,7 +218,7 @@ public class median_degree {
 	//
 	//  to delete 1 edge from the graph.
 	//
-    //  Each payment creates <= 1 new edge.
+        //  Each payment creates <= 1 new edge.
 	//  # of edges in graph <= K, where K is max # of payments in every 60-sec window.
 	//  also # of users (nodes) <= 2K.
 	//  Size of graphV and graphE TreeMap = O(K).
@@ -239,7 +246,7 @@ public class median_degree {
 	//
 	//  to add a degree to low or high half map.
 	//
-    //  Size of TreeMap is bounded by # of different degrees. Each payment creates <= 1 new edge.
+        //  Size of TreeMap is bounded by # of different degrees. Each payment creates <= 1 new edge.
 	//  max degree <= # of edges in graph <= K, where K is max # of payments in every 60-sec window.
 	//  also max degree <= # of users (nodes) <= 2K.
 	//  Size of low and high TreeMap = O(K).
@@ -266,6 +273,7 @@ public class median_degree {
 	
 	//
 	//  to delete a degree from low or high half map.
+        //
 	//  Size of TreeMap is bounded by # of different degrees. Each payment creates <= 1 new edge.
 	//  max degree <= # of edges in graph <= K, where K is max # of payments in every 60-sec window.
 	//  also max degree <= # of users (nodes) <= 2K.
