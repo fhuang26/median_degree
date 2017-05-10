@@ -1,5 +1,4 @@
 ### Venmo transaction graph and rolling median
-### Felix Huang
 
 (1) ./src/median_degree.java : main java program
 
