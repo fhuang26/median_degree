@@ -6,16 +6,16 @@
                         Roughly there are 760 payments in every 60-sec window.
 
 number of total payments and runtime in ms --
-* 1k :    233,
-* 2k :    374,
-* 5k :    429,
-* 10k :   641,
-* 20k :   922,
-* 40k :  1312,
-* 80k :  1814,
-* 160k : 2697,
-* 320k : 4173,
-* 640k : 6263 .
+* 1k :    233 ms
+* 2k :    374 ms
+* 5k :    429 ms
+* 10k :   641 ms
+* 20k :   922 ms
+* 40k :  1312 ms
+* 80k :  1814 ms
+* 160k : 2697 ms
+* 320k : 4173 ms
+* 640k : 6263 ms
 
 Runtime scales up close to linear.
 This program takes O(N*(log K)) time, where N is number of total payment transactions and
